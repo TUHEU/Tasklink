@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>My place — TaskLink</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body data-nav>
+<main>
+  <h1>My meeting place</h1>
+  <p class="subtle">Choose where you are happy to meet people. Others only see it if you share it and you have chatted together.</p>
+
+  <form id="searchForm" class="search-line">
+    <input id="q" placeholder="Search a place or address" aria-label="Search a place" autocomplete="off">
+    <button type="submit" class="btn-sm" style="min-height:48px;border-radius:12px">Search</button>
+  </form>
+  <ul id="results" class="results" hidden></ul>
+
+  <div class="map-wrap">
+    <div id="map" class="map-box"></div>
+    <div class="map-status" id="mapStatus">Loading the 3D map…</div>
+    <div class="map-tools">
+      <button type="button" id="gps">Use my current position</button>
+      <button type="button" id="tilt" class="on">3D view</button>
+    </div>
+  </div>
+  <p class="meta">Tap the map to choose a meeting point.</p>
+
+  <!-- The way to the place you set: from where you are now (GPS) to the pin -->
+  <section class="card path-card" id="pathCard" hidden>
+    <h3>Path to this place</h3>
+    <div class="modes" id="modes" role="group" aria-label="Travel mode">
+      <button type="button" data-mode="foot" class="on"><span aria-hidden="true">🚶</span> Walk</button>
+      <button type="button" data-mode="bike"><span aria-hidden="true">🚲</span> Bike</button>
+      <button type="button" data-mode="car"><span aria-hidden="true">🚗</span> Car</button>
+    </div>
+    <div class="row-actions">
+      <button type="button" id="pathBtn">Show the way from my position</button>
+      <a id="gmaps" class="big ghost" href="#" target="_blank" rel="noopener" style="margin:0">Open in Google Maps</a>
+    </div>
+    <p class="msg" id="pathMsg" role="alert"></p>
+    <div id="legs"></div>
+  </section>
+
+  <form id="form" class="card">
+    <label>Place name (optional)<input name="label" maxlength="120" placeholder="Carrefour Bastos, Yaoundé"></label>
+    <label class="checkline" style="margin-top:16px"><input type="checkbox" name="share" checked> Share this place with people I chat with</label>
+    <p class="msg" id="msg" role="alert"></p>
+    <div class="row-actions">
+      <button type="submit" id="save">Save place</button>
+      <button type="button" id="remove" class="ghost" hidden>Remove my place</button>
+    </div>
+  </form>
+</main>
+<script src="js/app.js"></script>
+<script src="js/map.js"></script>
+<script src="js/place.js"></script>
+</body>
+</html>

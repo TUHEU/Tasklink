@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Messages — TaskLink</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body data-nav>
+<main>
+  <!-- Conversation list -->
+  <section id="listView" hidden>
+    <h1>Messages</h1>
+    <details class="card new-chat">
+      <summary>Start a chat by e-mail</summary>
+      <form id="findForm">
+        <input type="email" name="email" required placeholder="Their e-mail address" aria-label="Their e-mail address" autocomplete="off">
+        <button type="submit">Start</button>
+      </form>
+      <p class="msg" id="findMsg" role="alert"></p>
+    </details>
+    <div id="list"></div>
+  </section>
+
+  <!-- One conversation -->
+  <section id="threadView" class="chat" hidden>
+    <div class="chat-head">
+      <a class="back" href="message.html" aria-label="Back">‹</a>
+      <a id="peerAvatar" href="#"></a>
+      <div class="who"><b id="peerName"></b><span class="meta" id="peerCity"></span></div>
+      <a id="meetLink" class="btn-sm orange big" href="#">Meet · 3D map</a>
+    </div>
+    <div id="log" class="chat-log" aria-live="polite"></div>
+    <p class="msg" id="msg" role="alert" style="margin:4px 0 0"></p>
+    <form id="composer" class="composer">
+      <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp,application/pdf,.pdf" hidden>
+      <button type="button" class="attach" id="attachBtn" aria-label="Attach a picture or a PDF" title="Attach a picture or a PDF">📎</button>
+      <div class="grow">
+        <div id="fileChip" class="file-chip" hidden></div>
+        <textarea name="content" rows="1" maxlength="2000" placeholder="Write a message…" aria-label="Message"></textarea>
+      </div>
+      <button type="submit" id="sendBtn">Send</button>
+    </form>
+  </section>
+</main>
+<dialog id="viewDlg" class="viewer" aria-label="Photo">
+  <div id="viewBody"></div>
+  <button type="button" class="ghost" id="viewClose">Close</button>
+</dialog>
+<script src="js/app.js"></script>
+<script src="js/messages.js"></script>
+</body>
+</html>

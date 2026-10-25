@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin — TaskLink</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body data-nav>
+<main>
+  <h1>Admin panel</h1>
+  <div class="counters" id="counters"></div>
+  <div class="admin-tabs" id="tabs" role="tablist">
+    <button type="button" data-tab="pending" class="on">Pending</button>
+    <button type="button" data-tab="accepted">Accepted</button>
+    <button type="button" data-tab="rejected">Rejected</button>
+    <button type="button" data-tab="blocked">Blocked users</button>
+  </div>
+  <p class="msg" id="msg" role="alert"></p>
+  <div id="list"></div>
+</main>
+<script src="js/app.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>

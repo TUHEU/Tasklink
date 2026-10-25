@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Profile — TaskLink</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body data-nav>
+<main class="profile">
+
+  <section class="p-card">
+    <div class="p-cover"></div>
+    <div class="p-body">
+      <div class="p-top">
+        <div class="avatar" id="avatar"></div>
+        <button type="button" class="btn-sm ghost" id="openEdit">Edit profile</button>
+      </div>
+      <h1 id="pname"></h1>
+      <p class="p-city"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path fill="currentColor" d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5Z"/></svg><span id="pcity"></span></p>
+      <p class="p-bio" id="pbio"></p>
+      <div class="chips" id="chips"></div>
+    </div>
+    <div class="stats">
+      <div><b id="stWorks">–</b><span>Works</span></div>
+      <div><b id="stServices">–</b><span>Services</span></div>
+      <div><b id="stRating">–</b><span>Rating</span></div>
+    </div>
+  </section>
+
+  <div class="sec-head">
+    <h2>My portfolio</h2>
+    <button type="button" class="btn-sm green" id="openAdd">+ Add work</button>
+  </div>
+  <div id="gallery"></div>
+
+  <div class="sec-head">
+    <h2>My services</h2>
+    <a class="link" href="services.html#offer">+ Add a service</a>
+  </div>
+  <div id="myServices"></div>
+
+  <div class="sec-head"><h2>My meeting place</h2><a class="link" href="place.html" id="placeLink">Edit</a></div>
+  <div class="card" id="placeCard"><p class="subtle" style="margin:0">Set your place so people can plan a route to you.</p></div>
+
+  <div class="sec-head"><h2>Reviews received</h2></div>
+  <div id="myReviews"></div>
+
+  <button type="button" class="p-logout" id="logout">Log out</button>
+</main>
+
+<dialog id="editDlg" aria-labelledby="editTitle">
+  <h2 id="editTitle">Edit profile</h2>
+  <form id="form">
+    <div class="photo-upload">
+      <img id="photoPreview" alt="Profile picture preview" hidden>
+      <label>Profile picture (JPG, PNG or WEBP, max 5 MB)<input id="profilePhoto" type="file" accept="image/jpeg,image/png,image/webp"></label>
+      <p class="subtle">Choose a picture from your phone or computer. It will appear on your profile.</p>
+      <p class="msg" id="photoMsg"></p>
+    </div>
+    <label>Full name<input name="full_name" maxlength="80" required></label>
+    <label>City
+      <select name="city" required>
+        <option value="Yaoundé">Yaoundé</option>
+        <option value="Douala">Douala</option>
+        <option value="Other">Other</option>
+      </select>
+    </label>
+    <label>About me<textarea name="bio" rows="4" maxlength="500" placeholder="Introduce yourself in a few words..."></textarea></label>
+    <label>My skills (comma separated)<input name="skills" maxlength="200" placeholder="Design, Video editing"></label>
+    <p class="msg" id="msg" role="alert"></p>
+    <div class="actions"><button type="button" class="ghost" data-close>Cancel</button><button type="submit" id="saveBtn">Save</button></div>
+  </form>
+</dialog>
+
+<dialog id="addDlg" aria-labelledby="addTitle">
+  <h2 id="addTitle">Add to portfolio</h2>
+  <form id="upload">
+    <label>Photo or video of your work<input type="file" name="file" accept="image/jpeg,image/png,image/webp,video/mp4,video/webm,video/quicktime" required></label>
+    <label>Short description<input name="caption" maxlength="150" placeholder="Ex: Logo for a bakery"></label>
+    <p class="msg" id="umsg" role="alert"></p>
+    <div class="actions"><button type="button" class="ghost" data-close>Cancel</button><button type="submit" class="green" id="uploadBtn">Upload</button></div>
+  </form>
+</dialog>
+
+<dialog id="viewDlg" class="viewer" aria-label="Portfolio">
+  <div id="viewBody"></div>
+  <p id="viewCap"></p>
+  <button type="button" class="ghost" data-close>Close</button>
+</dialog>
+
+<script src="js/app.js"></script>
+<script>
+const $ = (id) => document.getElementById(id);
+const form = $("form"), editDlg = $("editDlg"), addDlg = $("addDlg"), viewDlg = $("viewDlg");
+let me = null, items = [], info = null;
+
+/* Shrink photos before sending (max 1280 px). Falls back to the original file if the browser can't. */
+const shrink = (file) => new Promise((resolve) => {
+  const img = new Image();
+  const url = URL.createObjectURL(file);
+  img.onload = () => {
+    const s = Math.min(1, 1280 / Math.max(img.width, img.height));
+    const c = document.createElement("canvas");
+    c.width = Math.round(img.width * s); c.height = Math.round(img.height * s);
+    const ctx = c.getContext("2d");
+    ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, c.width, c.height);   // transparent PNG -> white, not black
+    ctx.drawImage(img, 0, 0, c.width, c.height);
+    c.toBlob((blob) => resolve(blob ? { blob, name: "photo.jpg" } : { blob: file, name: file.name }), "image/jpeg", 0.8);
+    URL.revokeObjectURL(url);
+  };
+  img.onerror = () => { URL.revokeObjectURL(url); resolve({ blob: file, name: file.name }); };
+  img.src = url;
+});
+
+function renderHead() {
+  renderAvatar($("avatar"), me);
+  $("pname").textContent = me.full_name || "";
+  $("pcity").textContent = t(me.city || "");
+  const bio = $("pbio");
+  bio.textContent = me.bio || t("Add a short bio so people get to know you.");
+  bio.classList.toggle("muted", !me.bio);
+  const skills = (me.skills || "").split(",").map((s) => s.trim()).filter(Boolean);
+  $("chips").innerHTML = skills.map((s) => `<span class="chip">${esc(s)}</span>`).join("")
+    || `<button type="button" class="chip chip-add" data-edit>+ Add skills</button>`;
+}
+
+function renderStats() {
+  $("stWorks").textContent = items.length;
+  $("stServices").textContent = info ? info.services.length : "–";
+  $("stRating").textContent = info && info.rating.n ? "★ " + info.rating.avg : "–";
+}
+
+function renderLists() {
+  $("myServices").innerHTML = info.services.map((s) => `<div class="card">
+      <b>${esc(s.title)}</b> ${s.kind === "training" ? `<span class="badge">Training</span>` : ""}
+      <div class="meta">${esc(t(s.category))}</div>
+      <div class="price">From ${esc(money(s.price))} FCFA</div>
+      <p>${esc(s.description)}</p></div>`).join("")
+    || `<div class="empty-state">No services yet.</div>`;
+  if (me.lat != null) {
+    $("placeCard").innerHTML = `<b>📍 ${esc(me.location_label || t("Your meeting place"))}</b>
+      <div class="meta">${me.share_location ? esc(t("Share this place with people I chat with")) : "🔒"}</div>`;
+  }
+  $("myReviews").innerHTML = info.reviews.map(reviewHtml).join("")
+    || `<div class="empty-state">No reviews yet.</div>`;
+}
+
+function renderGrid() {
+  renderStats();
+  if (!items.length) {
+    $("gallery").innerHTML = `<div class="empty"><p><b>Add your first work</b></p><p>Show clients what you can do.</p>
+      <button type="button" class="btn-sm green" data-add>+ Add work</button></div>`;
+    return;
+  }
+  $("gallery").innerHTML = `<div class="grid">${items.map((m, i) => {
+    const src = "/uploads/" + esc(m.filename);
+    const label = esc(m.caption || t("Portfolio image"));
+    return `<div class="tile">
+      ${m.kind === "video"
+        ? `<video muted playsinline preload="metadata" src="${src}#t=0.1"></video><span class="play" aria-hidden="true">▶</span>`
+        : `<img loading="lazy" src="${src}" alt="${label}">`}
+      ${m.caption ? `<span class="cap">${esc(m.caption)}</span>` : ""}
+      <button type="button" class="tile-open" data-view="${i}" aria-label="${label}"></button>
+      <button type="button" class="tile-del" data-del="${m.id}" aria-label="${esc(t("Delete"))}">×</button>
+    </div>`;
+  }).join("")}<button type="button" class="tile tile-add" data-add aria-label="${esc(t("+ Add work"))}">+</button></div>`;
+}
+
+const loadMedia = async () => { items = await api("/api/portfolio/" + me.id); renderGrid(); };
+
+api("/api/me").then(async (u) => {
+  me = u;
+  renderHead();
+  [items, info] = await Promise.all([api("/api/portfolio/" + me.id), api("/api/users/" + me.id)]);
+  renderGrid();
+  renderLists();
+}).catch((err) => { $("pbio").textContent = t(err.message); });
+
+const openEdit = () => {
+  if (!me) return;
+  for (const k of ["full_name", "city", "bio", "skills"]) form[k].value = me[k] || "";
+  if (!form.city.value) form.city.value = "Other";
+  $("msg").textContent = ""; $("photoMsg").textContent = "";
+  $("profilePhoto").value = "";
+  const preview = $("photoPreview");
+  preview.hidden = !me.profile_photo;
+  preview.src = me.profile_photo ? photoUrl(me.profile_photo) : "";
+  editDlg.showModal();
+};
+const openAdd = () => { $("umsg").textContent = ""; $("upload").reset(); addDlg.showModal(); };
+$("openEdit").onclick = openEdit;
+$("openAdd").onclick = openAdd;
+
+document.addEventListener("click", (e) => {
+  if (e.target.closest("[data-edit]")) return openEdit();
+  if (e.target.closest("[data-add]")) return openAdd();
+  const close = e.target.closest("[data-close]");
+  if (close) return close.closest("dialog").close();
+  if (e.target instanceof HTMLDialogElement) e.target.close();   // click on the dark backdrop
+});
+viewDlg.addEventListener("close", () => { $("viewBody").innerHTML = ""; });
+
+$("profilePhoto").addEventListener("change", () => {
+  const file = $("profilePhoto").files[0];
+  const preview = $("photoPreview");
+  $("photoMsg").textContent = "";
+  if (!file) return;
+  if (!/^image\/(jpeg|png|webp)$/.test(file.type) || file.size > 5 * 1024 * 1024) {
+    $("photoMsg").textContent = t("Choose a JPG, PNG or WEBP image smaller than 5 MB");
+    $("profilePhoto").value = "";
+    return;
+  }
+  preview.src = URL.createObjectURL(file);
+  preview.hidden = false;
+});
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  $("msg").textContent = "";
+  $("saveBtn").disabled = true;
+  try {
+    const photo = $("profilePhoto").files[0];
+    if (photo) {
+      const photoBody = new FormData();
+      photoBody.append("file", photo);
+      me.profile_photo = (await postForm("/api/profile-photo", photoBody)).profile_photo;
+    }
+    const data = formData(form);
+    await api("/api/me", "PUT", data);
+    Object.assign(me, data);
+    renderHead();
+    editDlg.close();
+  } catch (err) { showError($("msg"), err); }
+  $("saveBtn").disabled = false;
+});
+
+$("upload").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const file = e.target.file.files[0];
+  if (!file) return;
+  if (file.size > 30 * 1024 * 1024) { $("umsg").textContent = t("File too large (max 30 MB)"); return; }
+  $("uploadBtn").disabled = true;
+  $("umsg").textContent = "";
+  try {
+    const body = new FormData(e.target);
+    if (file.type.startsWith("image/")) {
+      const small = await shrink(file);
+      body.set("file", small.blob, small.name);
+    }
+    await postForm("/api/portfolio", body);
+    e.target.reset(); addDlg.close(); await loadMedia();
+  } catch (err) { showError($("umsg"), err); }
+  $("uploadBtn").disabled = false;
+});
+
+$("gallery").addEventListener("click", async (e) => {
+  const del = e.target.closest("[data-del]");
+  if (del) {
+    if (confirm(t("Delete this post?"))) {
+      try { await api("/api/portfolio/" + del.dataset.del, "DELETE"); loadMedia(); }
+      catch (err) { alert(t(err.message)); }
+    }
+    return;
+  }
+  const view = e.target.closest("[data-view]");
+  if (view) {
+    const m = items[view.dataset.view], src = "/uploads/" + esc(m.filename);
+    $("viewBody").innerHTML = m.kind === "video"
+      ? `<video controls autoplay playsinline src="${src}"></video>`
+      : `<img src="${src}" alt="${esc(m.caption || t("Portfolio image"))}">`;
+    $("viewCap").textContent = m.caption || "";
+    viewDlg.showModal();
+  }
+});
+
+$("logout").onclick = async () => { try { await api("/api/logout", "POST"); } catch (e) {} location.href = "login.html"; };
+</script>
+</body>
+</html>

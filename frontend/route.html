@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Meet — TaskLink</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body data-nav>
+<main>
+  <div class="card-head" style="margin-top:4px">
+    <div id="who" class="avatar avatar-sm" style="display:none"></div>
+    <div class="who"><h1 id="title" style="margin:0;font-size:1.4rem">Meet on the map</h1><span class="meta" id="sub"></span></div>
+    <a id="chatLink" class="btn-sm ghost big" style="margin:0" href="message.html">Message</a>
+  </div>
+
+  <div id="problem" class="card" hidden></div>
+
+  <div id="app" hidden>
+    <div class="modes" id="modes" role="group" aria-label="Travel mode">
+      <button type="button" data-mode="foot" class="on"><span aria-hidden="true">🚶</span> Walk</button>
+      <button type="button" data-mode="bike"><span aria-hidden="true">🚲</span> Bike</button>
+      <button type="button" data-mode="car"><span aria-hidden="true">🚗</span> Car</button>
+    </div>
+
+    <div class="map-wrap">
+      <div id="map" class="map-box"></div>
+      <div class="map-status" id="mapStatus">Loading the 3D map…</div>
+      <div class="map-tools">
+        <button type="button" id="tilt" class="on">3D view</button>
+        <button type="button" id="fly">Fly along the route</button>
+        <button type="button" id="gps">Use my current position</button>
+      </div>
+    </div>
+    <p class="meta" id="hint">Tap the map to choose a meeting point.</p>
+
+    <div class="row-actions">
+      <button type="button" id="half" class="green">Meet halfway</button>
+      <button type="button" id="clearMeet" class="ghost" hidden>Remove meeting point</button>
+      <button type="button" id="share" class="orange" hidden>Send meeting point in chat</button>
+      <a id="gmaps" class="big ghost" href="#" target="_blank" rel="noopener" style="margin:0" hidden>Open in Google Maps</a>
+    </div>
+    <p class="msg" id="msg" role="alert"></p>
+
+    <div id="legs"></div>
+  </div>
+</main>
+<script src="js/app.js"></script>
+<script src="js/map.js"></script>
+<script src="js/route.js"></script>
+</body>
+</html>

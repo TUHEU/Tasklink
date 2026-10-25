@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TaskLink — Skills meet opportunity</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<section class="welcome">
+  <div class="brand-mark">T</div>
+  <h1>TaskLink</h1>
+  <p>Connecting skills to opportunities. Find trusted local services, share what you do, and turn ideas into action.</p>
+  <a class="big" href="register.html">Get started <span aria-hidden="true">→</span></a>
+  <a class="link" href="login.html">I already have an account</a>
+  <p class="foot">Made for local talent · Cameroon</p>
+</section>
+<script src="js/app.js"></script>
+<script>
+  // Already logged in? Go straight to Home.
+  fetch('/api/me').then(r => { if (r.ok) location.replace('home.html'); }).catch(() => {});
+</script>
+</body>
+</html>

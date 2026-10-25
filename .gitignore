@@ -1,0 +1,6 @@
+backend/tasklink.db
+backend/.secret_key
+backend/uploads/*
+!backend/uploads/.gitkeep
+__pycache__/
+backend/admin_credentials.txt

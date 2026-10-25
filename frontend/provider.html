@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Provider profile — TaskLink</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body data-nav>
+<main>
+  <div class="seg"><a href="services.html">Services</a><a href="missions.html">Do both</a></div>
+
+  <section class="p-card">
+    <div class="p-cover"></div>
+    <div class="p-body">
+      <div class="p-top">
+        <div class="avatar" id="avatar"></div>
+        <button type="button" id="report" class="btn-sm orange">Report this profile</button>
+      </div>
+      <h1 id="pname"></h1>
+      <p class="p-city" id="pinfo"></p>
+      <p id="prating" class="subtle"></p>
+      <p id="pbio" class="p-bio"></p>
+      <div id="skills" class="chips"></div>
+      <div class="actions" style="justify-content:flex-start;margin-top:16px">
+        <a id="call" class="big green" href="#">Call</a>
+        <a id="msgbtn" class="big" href="#">Message</a>
+        <a id="meetbtn" class="big orange" href="#">Meet · 3D map</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="sec-head"><h2>Services and trainings</h2></div>
+  <div id="offers"></div>
+  <div class="sec-head"><h2>Portfolio</h2></div>
+  <div id="gallery"></div>
+  <div class="sec-head"><h2>Reviews</h2></div>
+  <div id="summary"></div>
+  <form id="reviewForm" class="card">
+    <h3 id="reviewTitle">Leave a review</h3>
+    <p class="subtle">Reviews help others confirm this person's skill.</p>
+    <p class="rate-label" aria-hidden="true">Your rating</p>
+    <fieldset class="rate" id="rate">
+      <legend>Your rating</legend>
+      <input type="radio" name="rating" id="r5" value="5"><label for="r5" title="5">★</label>
+      <input type="radio" name="rating" id="r4" value="4"><label for="r4" title="4">★</label>
+      <input type="radio" name="rating" id="r3" value="3"><label for="r3" title="3">★</label>
+      <input type="radio" name="rating" id="r2" value="2"><label for="r2" title="2">★</label>
+      <input type="radio" name="rating" id="r1" value="1"><label for="r1" title="1">★</label>
+    </fieldset>
+    <label>Your comment
+      <textarea name="comment" maxlength="500" required placeholder="What do you think of their skill? Quality, speed, reliability..."></textarea>
+    </label>
+    <p class="msg" id="reviewMsg" role="alert"></p>
+    <div class="row-actions">
+      <button type="submit" id="reviewSend">Publish review</button>
+      <button type="button" id="reviewDel" class="ghost" hidden>Delete my review</button>
+    </div>
+  </form>
+  <div id="reviews"></div>
+</main>
+
+<dialog id="viewDlg" class="viewer" aria-label="Portfolio">
+  <div id="viewBody"></div>
+  <p id="viewCap"></p>
+  <button type="button" class="ghost" id="viewClose">Close</button>
+</dialog>
+
+<script src="js/app.js"></script>
+<script>
+const $ = (id) => document.getElementById(id);
+const id = new URLSearchParams(location.search).get("id");
+const viewDlg = $("viewDlg");
+let items = [];
+
+async function init() {
+  if (!/^\d+$/.test(id || "")) return location.replace("services.html");
+  const [me, u, media] = await Promise.all([api("/api/me"), api("/api/users/" + id), api("/api/portfolio/" + id)]);
+  if (me.id === u.id) return location.replace("profile.html");      // your own page is the Profile tab
+  items = media;
+
+  renderAvatar($("avatar"), u);
+  $("pname").textContent = u.full_name;
+  $("pinfo").textContent = t(u.city);
+  $("prating").textContent = u.rating.n ? `★ ${u.rating.avg}/5 (${u.rating.n} ${u.rating.n > 1 ? "reviews" : "review"})` : "No reviews yet";
+  $("pbio").textContent = u.bio || t("This provider has not added a bio yet.");
+  $("skills").innerHTML = (u.skills || "").split(",").map((x) => x.trim()).filter(Boolean).map((x) => `<span class="chip">${esc(x)}</span>`).join("");
+  $("call").textContent = "Call " + u.phone;
+  $("call").href = "tel:" + u.phone.replace(/[^\d+]/g, "");
+  $("msgbtn").href = "message.html?to=" + encodeURIComponent(u.id);
+  $("meetbtn").href = "route.html?with=" + encodeURIComponent(u.id);
+
+  $("offers").innerHTML = u.services.map((s) => `<div class="card">
+      <b>${esc(s.title)}</b> ${s.kind === "training" ? `<span class="badge">Training</span>` : ""}
+      <div class="meta">${esc(t(s.category))}</div>
+      <div class="price">From ${esc(money(s.price))} FCFA</div>
+      <p>${esc(s.description)}</p></div>`).join("") || `<div class="empty-state">No services listed yet.</div>`;
+
+  $("gallery").innerHTML = items.length ? `<div class="grid">${items.map((m, i) => {
+    const src = "/uploads/" + esc(m.filename), label = esc(m.caption || t("Portfolio image"));
+    return `<div class="tile">${m.kind === "video"
+        ? `<video muted playsinline preload="metadata" src="${src}#t=0.1"></video><span class="play" aria-hidden="true">▶</span>`
+        : `<img loading="lazy" src="${src}" alt="${label}">`}
+      ${m.caption ? `<span class="cap">${esc(m.caption)}</span>` : ""}
+      <button type="button" class="tile-open" data-view="${i}" aria-label="${label}"></button></div>`;
+  }).join("")}</div>` : `<div class="empty-state">No portfolio items yet.</div>`;
+
+  renderReviews(u);
+}
+
+/* ---- Reviews: summary bars, list, and the form to leave / edit your own ---- */
+function renderReviews(u) {
+  const total = u.rating.n || 0;
+  $("prating").textContent = total ? `★ ${Number(u.rating.avg).toFixed(1)}/5 (${total} ${total > 1 ? "reviews" : "review"})` : t("No reviews yet");
+  $("summary").innerHTML = total ? `<div class="card summary">
+      <div class="big-rating"><b>${esc(Number(u.rating.avg).toFixed(1))}</b>${starsHtml(Math.round(u.rating.avg))}<span class="meta">${esc(total)} ${total > 1 ? "reviews" : "review"}</span></div>
+      <div class="bars">${[5, 4, 3, 2, 1].map((n) => `<div class="bar"><span>${n}★</span>
+        <i><b style="width:${Math.round(100 * u.distribution[n] / total)}%"></b></i><span>${esc(u.distribution[n])}</span></div>`).join("")}</div>
+    </div>` : "";
+  $("reviews").innerHTML = u.reviews.map(reviewHtml).join("") || `<div class="empty-state">No reviews yet.</div>`;
+  const mine = u.reviews.find((r) => r.mine && !r.verified);
+  const form = $("reviewForm");
+  $("reviewTitle").textContent = t(mine ? "Edit your review" : "Leave a review");
+  $("reviewSend").textContent = t(mine ? "Update review" : "Publish review");
+  $("reviewDel").hidden = !mine;
+  if (mine) {
+    form.comment.value = mine.comment;
+    const radio = form.querySelector(`input[name=rating][value="${mine.rating}"]`);
+    if (radio) radio.checked = true;
+  }
+}
+
+$("reviewForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const msg = $("reviewMsg"), btn = $("reviewSend");
+  msg.textContent = "";
+  const d = formData(e.target);
+  btn.disabled = true;
+  try {
+    await api(`/api/users/${id}/reviews`, "POST", { rating: d.rating, comment: d.comment });
+    renderReviews(await api("/api/users/" + id));
+    showOk(msg, "Review published. Thank you!");
+  } catch (err) { showError(msg, err); }
+  btn.disabled = false;
+});
+$("reviewDel").onclick = async () => {
+  if (!confirm(t("Delete your review?"))) return;
+  try {
+    await api(`/api/users/${id}/reviews`, "DELETE");
+    $("reviewForm").reset();
+    renderReviews(await api("/api/users/" + id));
+    showOk($("reviewMsg"), "Review deleted");
+  } catch (err) { showError($("reviewMsg"), err); }
+};
+
+init().catch((e) => {
+  document.querySelector("main").insertAdjacentHTML("beforeend", `<p class="msg">${esc(t(e.message))}</p>`);
+});
+
+$("gallery").addEventListener("click", (e) => {
+  const view = e.target.closest("[data-view]");
+  if (!view) return;
+  const m = items[view.dataset.view], src = "/uploads/" + esc(m.filename);
+  $("viewBody").innerHTML = m.kind === "video"
+    ? `<video controls autoplay playsinline src="${src}"></video>`
+    : `<img src="${src}" alt="${esc(m.caption || t("Portfolio image"))}">`;
+  $("viewCap").textContent = m.caption || "";
+  viewDlg.showModal();
+});
+$("viewClose").onclick = () => viewDlg.close();
+viewDlg.addEventListener("click", (e) => { if (e.target === viewDlg) viewDlg.close(); });
+viewDlg.addEventListener("close", () => { $("viewBody").innerHTML = ""; });
+
+$("report").onclick = async () => {
+  const reason = prompt(t("Why are you reporting this profile?"));
+  if (!reason || !reason.trim()) return;
+  try {
+    await api("/api/report", "POST", { user_id: Number(id), reason });
+    alert(t("Thank you. An administrator will review this report and you will get a notification with the decision."));
+  } catch (e) { alert(t(e.message)); }
+};
+</script>
+</body>
+</html>

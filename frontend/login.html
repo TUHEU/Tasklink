@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Log in — TaskLink</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<main class="auth-wrap">
+  <a class="auth-brand" href="index.html"><span>T</span> TaskLink</a>
+  <section class="auth-panel">
+    <h1>Welcome back</h1>
+    <p>Sign in to find work, offer a service, or connect with local talent.</p>
+    <form id="form" data-url="/api/login" data-next="home.html">
+      <label>Email address<input type="email" name="email" autocomplete="email" placeholder="you@example.com" required></label>
+      <label>Password<input type="password" name="password" autocomplete="current-password" required></label>
+      <p class="msg" id="msg" role="alert"></p>
+      <button type="submit">Log in <span aria-hidden="true">→</span></button>
+    </form>
+    <p class="subtle">New to TaskLink? <a href="register.html">Create an account</a></p>
+  </section>
+</main>
+<script src="js/app.js"></script>
+<script src="js/auth.js"></script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Home — TaskLink</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body data-nav>
+<div class="home-container">
+  <span class="auth-brand"><span>T</span> TaskLink</span>
+  <section class="home-hero">
+    <h1 id="welcomeTitle">Hello there 👋</h1>
+    <p>What would you like to make happen today?</p>
+    <form class="search-row" id="homeSearch">
+      <input id="homeQ" placeholder="Try “logo designer” or “how to save money”" aria-label="Search services and missions">
+      <button type="submit">Search ↗</button>
+    </form>
+  </section>
+
+  <div class="home-section-title"><h2>Choose your next step</h2></div>
+  <div class="action-buttons">
+    <a class="action-tile" href="services.html"><span class="action-icon">⌕</span><span>Find a service<small>Discover skills and training</small></span></a>
+    <a class="action-tile" href="services.html#offer"><span class="action-icon">＋</span><span>Offer a service<small>Share your skills</small></span></a>
+    <a class="action-tile" href="missions.html"><span class="action-icon">⇄</span><span>Do both<small>Find missions or hire help</small></span></a>
+  </div>
+
+  <div class="home-section-title"><h2>Built around your community</h2></div>
+  <div class="card">
+    <b>Local talent. Real opportunities.</b>
+    <p class="subtle">Browse services, post a mission, build your portfolio, and grow your reputation through reviews.</p>
+    <a class="link" href="profile.html">Complete your profile <span aria-hidden="true">→</span></a>
+  </div>
+</div>
+<script src="js/app.js"></script>
+<script>
+  const title = document.getElementById('welcomeTitle');
+  api('/api/me').then(u => { title.textContent = `Hello, ${u.full_name.split(' ')[0]} 👋`; }).catch(() => {});
+  document.getElementById('homeSearch').addEventListener('submit', e => {
+    e.preventDefault();
+    location.href = 'services.html?q=' + encodeURIComponent(document.getElementById('homeQ').value);
+  });
+</script>
+</body>
+</html>
