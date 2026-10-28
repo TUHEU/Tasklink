@@ -3,7 +3,8 @@ from functools import wraps
 from flask import Blueprint, session, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 from database import query
-from helpers import body, fail, text, valid_phone, CITIES, EMAIL_RE
+from helpers import (body, fail, text, clean_name, valid_name, valid_email, clean_phone,
+                     password_problem, CITIES)
 
 bp = Blueprint("auth", __name__)
 attempts = {}          # email -> times of recent wrong passwords (kept in memory)
@@ -46,21 +47,27 @@ def is_admin():
 @bp.post("/api/register")
 def register():
     d = body()
-    name, phone = text(d, "full_name"), text(d, "phone")
-    email, city = text(d, "email").lower(), text(d, "city")
+    name, phone = clean_name(text(d, "full_name")), text(d, "phone")
+    email, city = text(d, "email"), text(d, "city")
     password = d.get("password")
     if not (name and phone and email and city) or not isinstance(password, str) or not password:
         return fail("Please complete all required fields")
-    if len(password) < 6:
-        return fail("Password must contain at least 6 characters")
+    if email != email.lower():
+        return fail("Use lowercase letters only in the email address")
     if len(password) > 128 or len(name) > 80:
         return fail("Text is too long")
-    if not EMAIL_RE.match(email) or len(email) > 120:
+    if not valid_name(name):
+        return fail("Enter your real full name (letters only, at least 2 characters)")
+    if not valid_email(email):
         return fail("Enter a valid email address")
-    if not valid_phone(phone):
+    phone = clean_phone(phone)
+    if not phone:
         return fail("Enter a valid phone number")
     if city not in CITIES:
         return fail("Choose a city from the list")
+    problem = password_problem(password, email, name)
+    if problem:
+        return fail(problem)
     if query("SELECT id FROM users WHERE email=?", (email,), one=True):
         return fail("This email is already in use")
     try:

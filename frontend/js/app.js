@@ -184,7 +184,7 @@ const FR = {
   "Create an account": "Créer un compte", "Create your account": "Crée ton compte",
   "Join a community where skills turn into opportunities.": "Rejoins une communauté où les compétences deviennent des opportunités.",
   "Full name": "Nom complet", "Phone number": "Numéro de téléphone", "Your full name": "Ton nom complet",
-  "At least 6 characters": "Au moins 6 caractères", "Create my account": "Créer mon compte", "Already have an account?": "Déjà un compte ?",
+  "At least 8 characters, with a letter and a digit": "Au moins 8 caractères, avec une lettre et un chiffre", "Create my account": "Créer mon compte", "Already have an account?": "Déjà un compte ?",
   /* home */
   "Hello there 👋": "Bonjour 👋", "What would you like to make happen today?": "Que veux-tu accomplir aujourd'hui ?",
   "Try “logo designer” or “how to save money”": "Ex. « graphiste logo » ou « comment économiser »",
@@ -240,7 +240,12 @@ const FR = {
   "Why are you reporting this profile?": "Pourquoi signales-tu ce profil ?", "Thank you. We will review this profile.": "Merci. Nous allons examiner ce profil.",
   /* messages from the server and the browser */
   "Please log in": "Connecte-toi d'abord", "Please complete all required fields": "Remplis tous les champs obligatoires",
-  "Password must contain at least 6 characters": "Le mot de passe doit contenir au moins 6 caractères", "Text is too long": "Le texte est trop long",
+  "Password must contain at least 6 characters": "Le mot de passe doit contenir au moins 6 caractères",
+  "Password must contain at least 8 characters": "Le mot de passe doit contenir au moins 8 caractères",
+  "Password must contain letters and at least one digit": "Le mot de passe doit contenir des lettres et au moins un chiffre",
+  "Use lowercase letters only in the email address": "Utilise uniquement des minuscules dans l'adresse e-mail",
+  "This password is too easy to guess": "Ce mot de passe est trop facile à deviner",
+  "Enter your real full name (letters only, at least 2 characters)": "Entre ton vrai nom complet (lettres uniquement, 2 caractères minimum)", "Text is too long": "Le texte est trop long",
   "Enter a valid email address": "Entre une adresse e-mail valide", "Enter a valid phone number": "Entre un numéro de téléphone valide",
   "Choose a city from the list": "Choisis une ville dans la liste", "This email is already in use": "Cet e-mail est déjà utilisé",
   "Wrong email or password": "E-mail ou mot de passe incorrect", "Too many attempts. Try again in 10 minutes.": "Trop de tentatives. Réessaie dans 10 minutes.",

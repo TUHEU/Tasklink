@@ -1,7 +1,7 @@
 import os, uuid
 from flask import Blueprint, session, jsonify
 from database import query
-from helpers import body, fail, text, whole, inspect_upload, CITIES
+from helpers import body, fail, text, whole, inspect_upload, clean_name, valid_name, CITIES
 from routes.auth import login_required, is_admin
 from notify import notify_admins
 from flask import request
@@ -28,10 +28,12 @@ def get_me():
 @login_required
 def update_me():
     d = body()
-    name, city = text(d, "full_name"), text(d, "city")
+    name, city = clean_name(text(d, "full_name")), text(d, "city")
     bio, skills = text(d, "bio"), text(d, "skills")
     if not name or not city:
         return fail("Name and city are required")
+    if not valid_name(name):
+        return fail("Enter your real full name (letters only, at least 2 characters)")
     if city not in CITIES:
         return fail("Choose a city from the list")
     if len(name) > 80 or len(bio) > 500 or len(skills) > 200:

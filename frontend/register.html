@@ -13,9 +13,9 @@
     <h1>Create your account</h1>
     <p>Join a community where skills turn into opportunities.</p>
     <form id="form" data-url="/api/register" data-next="home.html">
-      <label>Full name<input name="full_name" autocomplete="name" placeholder="Your full name" maxlength="80" required></label>
-      <label>Phone number<input type="tel" name="phone" autocomplete="tel" placeholder="+237 6XX XXX XXX" maxlength="25" required></label>
-      <label>Email address<input type="email" name="email" autocomplete="email" placeholder="you@example.com" required></label>
+      <label>Full name<input name="full_name" autocomplete="name" placeholder="Your full name" minlength="2" maxlength="80" pattern="\p{L}+(?:[ '’.\-]{1,2}\p{L}+)*\.?" title="Letters only (accents, space, hyphen and apostrophe allowed)" required></label>
+      <label>Phone number<input type="tel" name="phone" autocomplete="tel" placeholder="+237 6XX XXX XXX" maxlength="25" pattern="[+0-9 \(\)\.\-]{9,25}" title="Example: +237 677 12 34 56" required></label>
+      <label>Email address<input type="email" name="email" autocomplete="email" autocapitalize="none" spellcheck="false" placeholder="you@example.com" maxlength="120" pattern="(?!.*\.\.)[a-z](?:[a-z0-9._%+\-]*[a-z0-9])?@(?:[a-z0-9](?:[a-z0-9\-]{0,61}[a-z0-9])?\.)+[a-z]{2,24}" title="Example: name@example.com (lowercase only, must start with a letter, no double dots)" required></label>
       <label>City
         <select name="city" required>
           <option value="Yaoundé">Yaoundé</option>
@@ -23,7 +23,7 @@
           <option value="Other">Other</option>
         </select>
       </label>
-      <label>Password<input type="password" name="password" minlength="6" maxlength="128" autocomplete="new-password" placeholder="At least 6 characters" required></label>
+      <label>Password<input type="password" name="password" minlength="8" maxlength="128" pattern="(?=.*[A-Za-z])(?=.*[0-9]).{8,128}" title="At least 8 characters, with a letter and a digit" autocomplete="new-password" placeholder="At least 8 characters, with a letter and a digit" required></label>
       <p class="msg" id="msg" role="alert"></p>
       <button type="submit">Create my account <span aria-hidden="true">→</span></button>
     </form>

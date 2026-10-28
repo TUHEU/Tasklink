@@ -58,7 +58,7 @@
       <p class="subtle">Choose a picture from your phone or computer. It will appear on your profile.</p>
       <p class="msg" id="photoMsg"></p>
     </div>
-    <label>Full name<input name="full_name" maxlength="80" required></label>
+    <label>Full name<input name="full_name" minlength="2" maxlength="80" pattern="\p{L}+(?:[ '’.\-]{1,2}\p{L}+)*\.?" title="Letters only (accents, space, hyphen and apostrophe allowed)" required></label>
     <label>City
       <select name="city" required>
         <option value="Yaoundé">Yaoundé</option>
