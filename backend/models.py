@@ -136,6 +136,10 @@ def init_db():
         conn.close()
 
 
+DEFAULT_ADMIN_EMAIL = "admin@tasklink.cm"
+DEFAULT_ADMIN_PASSWORD = "TaskLink@Admin2026"     # change it after the first login
+
+
 def seed_admin(conn):
     """Make sure at least one administrator exists.
 
@@ -147,7 +151,7 @@ def seed_admin(conn):
     if conn.execute("SELECT 1 FROM users WHERE is_admin=1 LIMIT 1").fetchone():
         return
     email = (os.environ.get("ADMIN_EMAIL") or "admin@tasklink.cm").strip().lower()
-    password = os.environ.get("ADMIN_PASSWORD")
+    password = os.environ.get("ADMIN_PASSWORD") or DEFAULT_ADMIN_PASSWORD
     existing = conn.execute("SELECT id FROM users WHERE email=?", (email,)).fetchone()
     if existing:                                    # that e-mail already has an account: promote it
         conn.execute("UPDATE users SET is_admin=1, blocked=0 WHERE id=?", (existing[0],))
