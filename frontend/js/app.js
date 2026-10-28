@@ -168,6 +168,9 @@ try { lang = localStorage.getItem("lang") === "en" ? "en" : "fr"; } catch (e) {}
 document.documentElement.lang = lang;
 
 const FR = {
+  "Talk with the people you work with.": "Échange avec les personnes avec qui tu travailles.",
+  "Decisions and updates about your account.": "Décisions et mises à jour concernant ton compte.",
+  "Review reports and manage blocked accounts.": "Examine les signalements et gère les comptes bloqués.",
   /* menu and general */
   "Home": "Accueil", "Explore": "Explorer", "Messages": "Messages", "Profile": "Profil", "Search": "Rechercher",
   "Search ↗": "Rechercher ↗", "Cancel": "Annuler", "Save": "Enregistrer", "Close": "Fermer", "Delete": "Supprimer",

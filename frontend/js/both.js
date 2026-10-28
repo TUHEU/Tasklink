@@ -9,9 +9,10 @@ const serviceCard = (s) => `<div class="card">
   <div class="card-head">
     <a href="provider.html?id=${esc(s.user_id)}" aria-label="${esc(s.provider)}">${avatarHtml(s.provider, s.photo)}</a>
     <div class="who"><b>${esc(s.title)}</b> ${s.kind === "training" ? `<span class="badge">Training</span>` : ""}
-      <div class="meta">${esc(s.provider)} · ${esc(t(s.category))} · ${esc(t(s.city))}${s.rating ? ` · ★ ${esc(s.rating)}` : ""}</div></div>
+      <div class="meta">${esc(s.provider)}${s.rating ? ` · <span class="stars">★</span> ${esc(s.rating)}` : ""}</div></div>
   </div>
-  <div class="price">From ${esc(money(s.price))} FCFA</div>
+  <div class="chips"><span class="chip">${esc(t(s.category))}</span><span class="chip loc">${esc(t(s.city))}</span></div>
+  <div class="price-pill">From ${esc(money(s.price))} FCFA</div>
   <a class="link" href="provider.html?id=${esc(s.user_id)}">View profile and call</a></div>`;
 
 const missionCard = (m) => `<div class="card">
@@ -20,7 +21,7 @@ const missionCard = (m) => `<div class="card">
     <div class="who"><b>${esc(m.title)}</b>
       <div class="meta"><a href="provider.html?id=${esc(m.user_id)}">${esc(m.author)}</a> · ${esc(t(m.city))}</div></div>
   </div>
-  <div class="price">Budget: ${esc(money(m.budget))} FCFA</div>
+  <div class="price-pill">Budget: ${esc(money(m.budget))} FCFA</div>
   <p>${esc(m.description)}</p>
   <button class="orange" data-apply="${m.id}" ${m.applied ? "disabled" : ""}>${m.applied ? "Applied" : "Apply"}</button></div>`;
 

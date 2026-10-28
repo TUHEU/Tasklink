@@ -415,3 +415,45 @@ button.danger { background: var(--red); } button.danger:hover { background: #a82
 /* path card (set-your-place page) */
 .path-card h3 { margin: 0 0 8px; }
 .path-card .row-actions a.big { text-decoration: none; }
+
+/* ==========================================================================
+   Profile-style design on every page (cover headers, chips, pills)
+   ========================================================================== */
+.page-heading.cover {
+  position: relative; overflow: hidden; margin: 0 0 16px; padding: 24px 22px 22px; border-radius: 22px;
+  background: radial-gradient(circle at 80% 20%, #6b91ff, transparent 32%), linear-gradient(125deg, #10213f, #315efb 70%, #6d7bff);
+  box-shadow: 0 16px 34px #254cd426;
+}
+.page-heading.cover h1 { margin: 0 0 6px; color: #fff; }
+.page-heading.cover p { margin: 0; max-width: 520px; color: #dbe4ff; }
+.page-heading.cover button { margin: 14px 0 0; background: rgba(255, 255, 255, .18); color: #fff; }
+.page-heading.cover button:hover { background: rgba(255, 255, 255, .3); box-shadow: none; }
+
+.seg { background: #e9eef8; border-radius: 999px; }
+.seg a { border-radius: 999px; }
+
+.card, .p-card, form.card, .auth-panel, .counters div { border-radius: 20px; }
+.card .chips { margin: 6px 0 12px; }
+.chip.loc::before { content: "\1F4CD"; margin-right: 4px; font-size: .78em; }
+.price-pill { display: inline-block; margin: 0 0 6px; padding: 5px 13px; border-radius: 999px; background: var(--pale); color: var(--navy); font-weight: 800; font-size: .88rem; }
+.card .card-head b { font-family: Manrope, 'DM Sans', sans-serif; letter-spacing: -.02em; }
+.card .link { display: inline-block; margin-top: 2px; }
+
+.search-panel { padding: 12px; background: #fff; border: 1px solid var(--line); border-radius: 20px; box-shadow: var(--shadow); }
+.search-panel input, .search-panel select { background: #f5f7fc; }
+.search-panel button { border-radius: 999px; }
+.search-line input { background: #fff; }
+
+.sec-head h2 { font-size: 1.15rem; }
+.sec-head { margin-top: 28px; }
+.convo { border-radius: 20px; }
+.convo .avatar-sm { border: 3px solid #fff; box-shadow: 0 0 0 1px var(--line); }
+.counters { gap: 0; padding: 0; background: #fff; border: 1px solid var(--line); border-radius: 20px; overflow: hidden; box-shadow: var(--shadow); }
+.counters div { border: 0; border-radius: 0; padding: 15px 6px; }
+.counters div + div { border-left: 1px solid var(--line); }
+.note { border-radius: 20px; }
+.map-wrap { border-radius: 22px; }
+.msg-b { border-radius: 18px; }
+button.green, button.orange, .big.green, .big.orange { border-radius: 999px; }
+.actions .big, .row-actions .big { border-radius: 999px; }
+@media (max-width: 560px) { .counters { grid-template-columns: repeat(2, 1fr); } .counters div:nth-child(3) { border-left: 0; } .counters div:nth-child(n+3) { border-top: 1px solid var(--line); } }
